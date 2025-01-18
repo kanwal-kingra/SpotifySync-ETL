@@ -1,0 +1,78 @@
+create database spotify_db;
+create or replace storage integration s3_init
+    type = external_stage
+    storage_provider = S3
+    enabled = true
+    storage_aws_role_arn = '#################################'
+    storage_allowed_locations = ('s3://soptify-etl-project-kkk')
+    comment = 'creating connection to S3';
+
+    desc integration s3_init;
+
+    create or replace file format csv_fileformat
+        type = csv
+        field_delimiter  = ','
+        skip_header = 1
+        null_if = ('NULL','null')
+        empty_field_as_null = true;
+
+ create or replace stage spotify_stage
+    url = 's3://soptify-etl-project-kkk/transformed_data/'
+    storage_integration = s3_init
+    file_format = csv_fileformat;
+
+# list files from external stage
+list @spotify_stage;
+list @spotify_stage/song;
+list @spotify_stage/album;
+list @spotify_stage/artist;
+
+# create snowflake tables
+create or replace table spotify_db.public.table_album(
+    album_id string,
+    album_name string,
+    release_date date,
+    total_tracks int,
+    url string
+);
+
+create or replace table spotify_db.public.table_artist(
+    artist_id string,
+    artist_name string,
+    external_url string
+);
+
+create or replace table spotify_db.public.table_song(
+    song_id string,
+    song_name string,
+    duration_ms integer,
+    url string,
+    popularity int,
+    song_added date,
+    album_id string,
+    artist_id string
+);
+
+# snowpipes for ingesting data into snowflake
+create or replace schema pipe;
+
+
+create or replace pipe pipe.table_album_pipe
+auto_ingest = true
+as 
+copy into spotify_db.public.table_album 
+from @spotify_db.public.spotify_stage/album/;
+
+create or replace pipe pipe.table_song_pipe
+auto_ingest = true
+as 
+copy into spotify_db.public.table_song 
+from @spotify_db.public.spotify_stage/song/;
+
+create or replace pipe pipe.table_artist_pipe
+auto_ingest = true
+as 
+copy into spotify_db.public.table_artist 
+from @spotify_db.public.spotify_stage/artist/;
+
+desc pipe pipe.table_song_pipe; 
