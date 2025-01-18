@@ -1,0 +1,11 @@
+# creating views on top of tables to get useful insights into data
+create or replace view top_artists_summary AS 
+select 
+    table_artist.artist_id,
+    table_song.song_name, 
+    table_song.popularity,
+    DENSE_RANK() OVER (ORDER BY table_song.popularity DESC) AS rank
+from table_song inner join table_artist
+on table_song.artist_id = table_artist.artist_id;
+
+select * from top_artists_summary order by popularity desc;
