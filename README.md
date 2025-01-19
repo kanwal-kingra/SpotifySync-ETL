@@ -19,4 +19,4 @@ https://open.spotify.com/playlist/0zc6Hq9OIAengtGG6a3lfs
 - Queried the snowflake tables
 - Designed Views on top of Snowflake Tables to get insights into popularity of Artists and their songs and rank them.
 
-![screenshot](spotify-data-pipeline.jpg)
+![screenshot](spotify-data-pipeline-arch.jpg)
