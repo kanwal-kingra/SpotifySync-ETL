@@ -13,7 +13,7 @@ def lambda_handler(event, context):
     sp = spotipy.Spotify(auth_manager=client_credentials_manager)
 
 # Extract playlist ID from link
-link = 'https://open.spotify.com/playlist/6VOedaf3eNWDOVpa9Qdlvg'
+link = 'https://open.spotify.com/playlist/0zc6Hq9OIAengtGG6a3lfs'
 playlist_id = link.split("/")[-1].split("?")[0]  # Remove query parameters if present
 
 # Fetch playlist tracks
